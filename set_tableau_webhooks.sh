@@ -1,14 +1,24 @@
 #!/bin/bash
+clear
 
 echo Welcome to the MightyCanary webhook setup!
+
 echo Please, type the Account ID that you received from MightyCanary
 echo or navigate to https://app.mightycanary.com/accounts and check the URL of your account to receive an ID
 read account_id
+
+echo You can check the \"Explore\" page url and look for the CONTENT_URL and Server
+echo in format https://SERVER.online.tableau.com/#/site/CONTENT_URL/explore
+
+echo Please, type the Server of your Tableau Account
+read server
+
 echo Please, type the Content URL of your Tableau Account
-echo You can check the \"Explore\" page url and look for the CONTENT_URL in format https://server.online.tableau.com/#/site/CONTENT_URL/explore
 read contentUrl
+
 echo Please, type your Tableau Login
 read login
+
 echo Please, type your Tableau Password
 stty_orig=$(stty -g) # saving state
 stty -echo # disabling password
@@ -16,7 +26,7 @@ read password
 stty $stty_orig
 echo $password
 
-LOGIN_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.com/api/3.6/auth/signin' \
+LOGIN_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.6/auth/signin' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
 --data-raw '{
@@ -49,13 +59,13 @@ echo "${token}"
 # echo Please, paste your "token" from the response above
 # read token
 
-# LIST_RESPONSE=$(curl --location --request GET 'https://10ay.online.tableau.com/api/3.6/sites/'"${site_id}"'/webhooks' \
+# LIST_RESPONSE=$(curl --location --request GET 'https://'"${server}"'.online.tableau.com/api/3.6/sites/'"${site_id}"'/webhooks' \
 # --header 'X-Tableau-Auth: '"${token}"'' \
 # --header 'Accept: application/json')
 #
 # echo "${LIST_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -73,7 +83,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.co
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -91,7 +101,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.co
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -109,7 +119,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.co
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://10ay.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
