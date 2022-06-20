@@ -14,5 +14,7 @@ We also have a script that runs on PowerShell. The proceedure is the same.
 ```powershell
 ./set_tableau_webhooks_using_token.ps1
 ```
+## Postman Collection
+If you would be more comfortable with Postman, here is a pointer to their Webhook Assets - https://github.com/tableau/rest-api-samples/tree/master/postman
 # Questions
 It is that simple. Let us know if you need help in our slack or by email.
