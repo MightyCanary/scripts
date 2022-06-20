@@ -2,18 +2,25 @@
 clear
 
 echo Welcome to the MightyCanary webhook setup!
+echo This example uses your Tableau user and password.
+echo For a more secure way to set up webhooks or if you are using SSO,
+echo see the Personal Access token approach in the same folder
 
 echo Please, type the Account ID that you received from MightyCanary
-echo or navigate to https://app.mightycanary.com/accounts and check the URL of your account to receive an ID
+echo or navigate to https://app.mightycanary.com/accounts and check
+echo the URL of your account to receive an ID
 read account_id
 
-echo You can check the \"Explore\" page url and look for the CONTENT_URL and Server
-echo in format https://SERVER.online.tableau.com/#/site/CONTENT_URL/explore
+echo You can check the \"Explore\" page url 
+echo and look for the CONTENT_URL and DNS.HOST
+echo in format https://DNS.HOST/#/site/CONTENT_URL/explore
 
-echo Please, type the Server of your Tableau Account
+echo Please, type the DNS.HOST name of your Tableau Server
+echo "(e.g. https://10ay.online.tableau.com)"
 read server
 
-echo Please, type the Content URL of your Tableau Account
+echo Please, type the Content URL for the site of your Tableau Account
+echo If you are running your own Tableau Server, you can leave this blank
 read contentUrl
 
 echo Please, type your Tableau Login
@@ -26,7 +33,7 @@ read password
 stty $stty_orig
 echo $password
 
-LOGIN_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.6/auth/signin' \
+LOGIN_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.6/auth/signin' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
 --data-raw '{
@@ -54,18 +61,7 @@ token=$(echo "${LOGIN_RESPONSE}" | jsonValue token)
 echo "Your token is: "
 echo "${token}"
 
-# echo Please, paste your "site id" from the response above
-# read site_id
-# echo Please, paste your "token" from the response above
-# read token
-
-# LIST_RESPONSE=$(curl --location --request GET 'https://'"${server}"'.online.tableau.com/api/3.6/sites/'"${site_id}"'/webhooks' \
-# --header 'X-Tableau-Auth: '"${token}"'' \
-# --header 'Accept: application/json')
-#
-# echo "${LIST_RESPONSE}"
-
-CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -83,7 +79,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.t
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -101,7 +97,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.t
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -119,7 +115,7 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.t
 }')
 echo "${CREATE_RESPONSE}"
 
-CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'.online.tableau.com/api/3.9/sites/'"${site_id}"'/webhooks' \
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
 --header 'X-Tableau-Auth: '"${token}"'' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
