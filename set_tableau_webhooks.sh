@@ -106,6 +106,24 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/
       "webhook-destination": {
          "webhook-destination-http": {
             "method": "POST",
+            "url": "https://app.mightycanary.com/tableau_webhooks/'"${account_id}"'/datasource_refresh_started"
+         }
+      },
+      "event": "WorkbookRefreshStarted",
+      "name": "Mighty Canary Workbook Refresh Started Webhook"
+   }
+}')
+echo "${CREATE_RESPONSE}"
+
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
+--header 'X-Tableau-Auth: '"${token}"'' \
+--header 'Content-Type: application/json' \
+--header 'Accept: application/json' \
+--data-raw '{
+   "webhook": {
+      "webhook-destination": {
+         "webhook-destination-http": {
+            "method": "POST",
             "url": "https://app.mightycanary.com/tableau_webhooks/'"${account_id}"'/datasource_refresh_failed"
          }
       },
@@ -129,6 +147,24 @@ CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/
       },
       "event": "DatasourceRefreshSucceeded",
       "name": "Mighty Canary Datasource Refresh Succeeded Webhook"
+   }
+}')
+echo "${CREATE_RESPONSE}"
+
+CREATE_RESPONSE=$(curl --location --request POST 'https://'"${server}"'/api/3.9/sites/'"${site_id}"'/webhooks' \
+--header 'X-Tableau-Auth: '"${token}"'' \
+--header 'Content-Type: application/json' \
+--header 'Accept: application/json' \
+--data-raw '{
+   "webhook": {
+      "webhook-destination": {
+         "webhook-destination-http": {
+            "method": "POST",
+            "url": "https://app.mightycanary.com/tableau_webhooks/'"${account_id}"'/datasource_refresh_started"
+         }
+      },
+      "event": "DatasourceRefreshStarted",
+      "name": "Mighty Canary Datasource Refresh Started Webhook"
    }
 }')
 echo "${CREATE_RESPONSE}"

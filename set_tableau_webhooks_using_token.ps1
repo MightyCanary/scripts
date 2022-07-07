@@ -31,6 +31,7 @@ $access_token_name = Read-Host "Please, type your Tableau Access Token Name"
 Write-Output ""
 $access_token = Read-Host "Please, type your Tableau Access Token"
 Write-Output ""
+# handle login to Tableau Server
 $creds = @{
    credentials= @{
       site= @{
@@ -51,91 +52,57 @@ Write-Output "site id: $site_id, user id: $myUserID, token: $token"
 Write-Output "########################################"
 # set up header fields with auth token
 $global:headers = New-Object “System.Collections.Generic.Dictionary[[String],[String]]”
-# add X-Tableau-Auth header with our auth tokents-
+# add X-Tableau-Auth header with our auth token
 $headers.Add(“X-Tableau-Auth”, $token)
 $headers.Add("Accept", "application/json")
 $wh_url = "$api_url/sites/$site_id/webhooks"
 # Write-Output "Webhook URL: $wh_url"
-$mcwh_url = "https://staging.mightycanary.com/tableau_webhooks/$account_id"
-
-# add the webhooks, first Workbook Refresh Failed Webhook
-$webhooks = @{
-   webhook= @{
-      "webhook-destination"= @{
-         "webhook-destination-http"= @{
-            method= "POST"
-            url= "$mcwh_url/datasource_refresh_failed"
-         }
-      }
-      event= "WorkbookRefreshFailed"
-      name= "Mighty Canary Workbook Refresh Failed Webhook"
+$mcwh_url = "https://app.mightycanary.com/tableau_webhooks/$account_id"
+# Write-Output "Webhook URL: $mcwh_url"
+# add the webhooks by iterating over the webhooks definition dictionary
+$webhook_registrations = @{
+   WorkbookRefreshSucceeded=@{
+      url="$mcwh_url/datasource_refresh_succeeded"
+      name="Mighty Canary Workbook Refresh Succeeded Webhook"
+   }
+   WorkbookRefreshStarted=@{
+      url="$mcwh_url/datasource_refresh_started"
+      name="Mighty Canary Workbook Refresh Started Webhook"
+   }
+   WorkbookRefreshFailed=@{
+      url="$mcwh_url/datasource_refresh_failed"
+      name="Mighty Canary Workbook Refresh Failed Webhook"
+   }
+   DatasourceRefreshSucceeded=@{
+      url="$mcwh_url/datasource_refresh_succeeded"
+      name="Mighty Canary Datasource Refresh Succeeded Webhook"
+   }
+   DatasourceRefreshStarted=@{
+      url="$mcwh_url/datasource_refresh_started"
+      name="Mighty Canary Datasource Refresh Started Webhook"
+   }
+   DatasourceRefreshFailed=@{
+      url="$mcwh_url/datasource_refresh_failed"
+      name="Mighty Canary Datasource Refresh Failed Webhook"
    }
 }
-$json = $webhooks | ConvertTo-Json  -Depth 5
-# Write-Output $json
-Invoke-RestMethod -Uri $wh_url -Method Post -Headers $headers -Body $json -ContentType 'application/json'
-Write-Output "Registered Workbook Refresh Failed Webhook"
 
-# Workbook Refresh Succeeded Webhook
-$webhooks = @{
-   webhook= @{
-      "webhook-destination"= @{
-         "webhook-destination-http"= @{
-            method= "POST"
-            url= "$mcwh_url/datasource_refresh_succeeded"
+foreach ($key in $webhook_registrations.Keys) {
+   $webhooks = @{
+      webhook= @{
+         "webhook-destination"= @{
+            "webhook-destination-http"= @{
+               method= "POST"
+               url= $webhook_registrations.$key.url
+            }
          }
+         event= $key
+         name= $webhook_registrations.$key.name
       }
-      event= "WorkbookRefreshSucceeded"
-      name= "Mighty Canary Workbook Refresh Succeeded Webhook"
    }
+   $json = $webhooks | ConvertTo-Json -Depth 5
+   Write-Output $json
+   Invoke-RestMethod -Uri $wh_url -Method Post -Headers $headers -Body $json -ContentType 'application/json'
+   Write-Output "Registered $($webhook_registrations.$key.name)"
 }
-$json = $webhooks | ConvertTo-Json -Depth 5
-# Write-Output $json
-Invoke-RestMethod -Uri $wh_url -Method Post -Headers $headers -Body $json -ContentType 'application/json'
-Write-Output "Registered Workbook Refresh Succeeded Webhook"
-
-# Datasource Refresh Failed webhook
-$webhooks = @{
-   webhook= @{
-      "webhook-destination"= @{
-         "webhook-destination-http"= @{
-            method= "POST"
-            url= "$mcwh_url/datasource_refresh_failed"
-         }
-      }
-      event= "DatasourceRefreshFailed"
-      name= "Mighty Canary Datasource Refresh Failed Webhook"
-   }
-}
-$json = $webhooks | ConvertTo-Json  -Depth 5
-# Write-Output $json
-Invoke-RestMethod -Uri $wh_url -Method Post -Headers $headers -Body $json -ContentType 'application/json'
-Write-Output "Registered Datasource Refresh Failed Webhook"
-
-# Datasource Refresh Succeeded webhook
-$webhooks = @{
-   webhook= @{
-      "webhook-destination"= @{
-         "webhook-destination-http"= @{
-            method= "POST"
-            url= "$mcwh_url/datasource_refresh_succeeded"
-         }
-      }
-      event= "WorkbookRefreshSucceeded"
-      name= "Mighty Canary Workbook Refresh Succeeded Webhook"
-   }
-}
-$json = $webhooks | ConvertTo-Json -Depth 5
-# Write-Output $json
-Invoke-RestMethod -Uri $wh_url -Method Post -Headers $headers -Body $json -ContentType 'application/json'
-Write-Output "Registered Datasource Refresh Succeeded Webhook"
-
-# finally, list all the webhooks
-$response = Invoke-RestMethod -Uri $wh_url -Method Get -Headers $headers
-# Write-Output "Registered Webhooks: " + $response.webhooks.webhook
-Foreach ($wh in $response.webhooks.webhook) {
-   $name = $wh.name
-   $isEnabled = $wh.isEnabled
-   $ev = $wh.event
-   Write-Output "Webhook: $name, Enabled: $isEnabled, Event: $ev"
-}
+Write-Output "############## Finished ################"
