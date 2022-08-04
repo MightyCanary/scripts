@@ -66,6 +66,8 @@ function downcase()
 
 echo "Welcome to the MightyCanary webhook setup!"
 echo "This example uses your Tableau Username and Password for Access."
+echo "For a more secure way to set up webhooks or if you are using SSO,"
+echo "see the Personal Access token approach in the same folder"
 
 if [ -z "$account_id" ]; then
   echo "Please, type the Account ID that you received from MightyCanary"
